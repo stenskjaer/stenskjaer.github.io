@@ -41,8 +41,8 @@ html_pre = r"""
 
   <body>
     <!-- MAIN CONTENT -->
-    <div id="slide-wrap" class="outer">
-      <section id="main_content" class="inner">
+    <div id="slide-wrap">
+      <section id="slides">
         <div class="bss-slides num1" tabindex="1" autofocus="autofocus">
 """
 
