@@ -1,14 +1,14 @@
 .bss-slides{
 	position: relative;
-	display: block;    
+	display: block;
+	padding: 5%;
 }
 .bss-slides:focus{
 	outline: 0;
 }
 .bss-slides figure{
-	position: absolute;
-	top: 0;
 	padding: 0 45px;
+	height: 100%;
 }
 .bss-slides figure:first-child{
 	position: relative;
