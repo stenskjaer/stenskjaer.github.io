@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import csv, re
 import settings
 import subprocess, os, shutil
@@ -81,9 +82,69 @@ def create_main_tex_file(directory, output, compilation, title):
     shutil.rmtree(d)
 
 
+def create_main_html_file(directory, output, title):
+    """Creates a main html file in directory with same name as var
+    filename.
+
+    Returns the latex document as a string.
+
+    Keyword Arguments:
+    content  -- String formatted as latex. Document content.
+    filename --
+    """
+
+    # First: List all csv-files in input directory
+    content_list = list_csv_files(directory)
+    
+    # Then read the csv-files
+    for item in content_list:
+        
+        # Create temp directory
+        d = output
+        if not os.path.exists(d):
+            os.mkdir(d)
+        
+        # Create .html-file 
+        basename = os.path.basename(item[:-4])
+        filename = os.path.join(d, basename + '.html')
+
+        if not title:
+            title = basename
+        frames = csv_to_html_frames(item, title)
+
+        with open(filename, 'w') as f:
+            html_pre = settings.html_pre
+            html_post = settings.html_post
+            complete_content = html_pre + frames + html_post
+            f.write(complete_content)
+
+        os.rename(filename,
+                  os.path.join(output, os.path.basename(filename)))
+
 def compile_latex(filename):
     args = ['latexmk', '-pdf', filename]
     subprocess.call(args, cwd=os.path.dirname(filename))
+
+
+def set_font_html(string):
+    """ Convert input to HTML compliant output:
+    *content* -> <span class="bold">content</span>;
+    'content' -> 'content';
+
+    Keyword Arguments:
+    string -- The input string.
+    """
+
+    # Set boldface
+    # string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
+
+    # Set quotation marks
+    string = re.sub(r'\'([^\']+)\'', r"'\1'", string)
+
+    # Set ldots
+    # string = re.sub(r'\.{3}', r'\ldots{}', string)
+
+    return(string)
 
 
 def set_font_commands(string):
@@ -144,6 +205,49 @@ def csv_to_frames(filename):
 
     return frames
 
+def csv_to_html_frames(filename, title):
+    """
+    Put cells of csv in html frames.
+
+    Return string: frames
+
+    Keyword Arguments:
+    filename -- input file
+    """
+
+
+    with open(filename) as f:
+        reader = csv.reader(f)
+        frames = ""
+        for row in reader:
+            for cell in row:
+                unicode(cell, 'utf-8')
+            question = row[0]
+            answer = row[1]
+
+            # Convert *content* to \textbf{content}
+            question = set_font_commands(question)
+            answer = set_font_commands(answer)
+
+            # Create html
+            frames += str("""
+            <figure class="question">
+            <h4>Spørgsmål</h4>
+            <p>{0}</p>
+            <span class="title">{1}</span>
+            </figure>
+            """.format(question, title))
+            frames += str("""
+            <figure class="answer">\n
+            <h4>Svar</h4>\n
+            <p>{0}</p>\n
+            <span class="title">{1}</span>
+            </figure>
+            """.format(answer, title))
+
+    return frames
+
+
 def __main__():
     import argparse
 
@@ -180,8 +284,7 @@ def __main__():
         output = os.path.join(directory, 'output')
 
     # The csv to tex conversion.
-    create_main_tex_file(directory, output,
-                         args.compilation, args.title)
+    create_main_html_file(directory, output, args.title)
 
 if __name__ == "__main__":
     __main__()
