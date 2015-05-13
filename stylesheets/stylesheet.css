@@ -424,6 +424,24 @@ Small Device Styles
     max-width: 480px;
   }
 
+  #slide-wrap .inner {
+	  min-width: 320px;
+	  max-width: 480px;
+	  border: 1px black solid;
+	  background: #f2f2f2;
+	  padding: 0;
+	  max-height: 280px;
+  }
+
+  .bss-slides {
+	  height: 200px;
+  }
+
+  .bss-slides p {
+	  font-size: 20px;
+  }
+
+
   #project_title {
   font-size: 32px;
   }
