@@ -422,10 +422,6 @@ Slides
 	position: relative;
 }
 
-.bss-slides p {
-	margin-top: 4%;
-}
-
 .bss-slides h4 {
 	font-size: 4vw;
 	margin: 0;
@@ -506,11 +502,11 @@ Small Device Styles
 	  height: 300px;
   }
   .bss-slides p {
-	  font-size: 22px;
+	  font-size: 20px;
   }
 
   .bss-slides span {
-	  font-size: 18px;
+	  font-size: 14px;
   }
   
   #project_title {
@@ -566,17 +562,17 @@ Small Device Styles
 		height: 500px;
 	}
 	.bss-slides p {
-		font-size: 42px;
+		font-size: 38px;
 	}
 	.bss-slides span {
-		font-size: 20px;
+		font-size: 18px;
 	}	
 }
 
 @media screen and (min-width: 1000px) {
 	.bss-slides p {
-		font-size: 50px;
-		padding-top: 5% 0;
+		font-size: 42px;
+		/* padding-top: 4% 0; */
 	}
 	.bss-slides span {
 		font-size: 22px;
