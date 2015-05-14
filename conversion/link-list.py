@@ -10,7 +10,7 @@ def __main__():
     except IndexError:
         exit("Out of range. Input the directory")
 
-    slide_dir = "slides/echo/"
+    slide_dir = "slides/vademecum/"
     files_and_titles = []
     for f in os.listdir(dir):
         clean_name = os.path.basename(f)[:-4]
@@ -27,7 +27,7 @@ def __main__():
     # Here we start the list
     print("<ul>")
     for file, title in files_and_titles:
-        print("    <li><a href=\"{0}\">{1}</a></li>".format(file, title))
+        print("<li><a href=\"{0}\">{1}</a></li>".format(file, title))
     print("</ul>")
 
 if __name__ == "__main__":
