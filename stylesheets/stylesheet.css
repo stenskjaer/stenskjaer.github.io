@@ -482,7 +482,23 @@ span.location {
 	border-bottom-right-radius: 3px;
 }
 
+#final-frame {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	padding: 0px;
+	z-index: 5;
+	background: #f2f2f2;	
+}
 
+#final-frame div {
+	height: 100%;
+	text-align: center;
+	top: 35%;
+	position: relative;	
+}
 
 /*******************************************************************************
 Small Device Styles

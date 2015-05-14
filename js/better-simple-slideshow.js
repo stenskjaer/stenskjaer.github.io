@@ -1,27 +1,41 @@
 var makeBSS = function (el, options) {
-    var $slideshows = document.querySelectorAll(el), // a collection of all of the slideshow
+    // a collection of all of the slideshow
+	var $slideshows = document.querySelectorAll(el), 
         $slideshow = {},
         Slideshow = {
             init: function (el, options) {
                 this.counter = 0; // to keep track of current slide
                 this.el = el; // current slideshow container    
-                this.$items = el.querySelectorAll('figure'); // a collection of all of the slides, caching for performance
-                this.numItems = this.$items.length; // total number of slides
-                options = options || {}; // if options object not passed in, then set to empty object 
-                options.auto = options.auto || false; // if options.auto object not passed in, then set to false
+                // a collection of all of the slides, caching for performance
+				this.$items = el.querySelectorAll('figure'); 
+                // total number of slides
+				this.numItems = this.$items.length; 
+                // if options object not passed in, then set to empty object
+				options = options || {}; 
+                // if options.auto object not passed in, then set to false
+				options.auto = options.auto || false; 
                 this.opts = {
-                    auto: (typeof options.auto === "undefined") ? false : options.auto,
-                    speed: (typeof options.auto.speed === "undefined") ? 1500 : options.auto.speed,
-                    pauseOnHover: (typeof options.auto.pauseOnHover === "undefined") ? false : options.auto.pauseOnHover,
-                    fullScreen: (typeof options.fullScreen === "undefined") ? false : options.fullScreen,
-                    swipe: (typeof options.swipe === "undefined") ? false : options.swipe
+                    auto: (typeof options.auto === "undefined") ?
+						false : options.auto,
+                    speed: (typeof options.auto.speed === "undefined") ?
+						1500 : options.auto.speed,
+                    pauseOnHover: (typeof
+								   options.auto.pauseOnHover === "undefined") ?
+						false : options.auto.pauseOnHover,
+                    fullScreen: (typeof options.fullScreen === "undefined") ?
+						false : options.fullScreen,
+                    swipe: (typeof options.swipe === "undefined") ?
+						true : options.swipe
                 };
                 
-                this.$items[0].classList.add('bss-show'); // add show class to first figure 
+				// add show class to first figure 
+                this.$items[0].classList.add('bss-show'); 
                 this.injectControls(el);
+				this.injectFinalFrame(el);
                 this.addEventListeners(el);
                 if (this.opts.auto) {
-                    this.autoCycle(this.el, this.opts.speed, this.opts.pauseOnHover);
+                    this.autoCycle(this.el, this.opts.speed,
+								   this.opts.pauseOnHover);
                 }
                 if (this.opts.fullScreen) {
                     this.addFullScreen(this.el);
@@ -31,11 +45,14 @@ var makeBSS = function (el, options) {
                 }
             },
             showCurrent: function (i) {
-                // increment or decrement this.counter depending on whether i === 1 or i === -1
+                // increment or decrement this.counter depending on whether i
+                // === 1 or i === -1
                 if (i > 0) {
-                    this.counter = (this.counter + 1 === this.numItems) ? 0 : this.counter + 1;
+                    this.counter = (this.counter + 1 === this.numItems) ?
+						-2 : this.counter + 1;
                 } else {
-                    this.counter = (this.counter - 1 < 0) ? this.numItems - 1 : this.counter - 1;
+                    this.counter = (this.counter - 1 < 0) ?
+						this.numItems - 1 : this.counter - 1;
                 }
 
                 // remove .show from whichever element currently has it 
@@ -43,21 +60,39 @@ var makeBSS = function (el, options) {
                 [].forEach.call(this.$items, function (el) {
                     el.classList.remove('bss-show');
                 });
-  
+				
                 // add .show to the one item that's supposed to have it
-                this.$items[this.counter].classList.add('bss-show');
+                if (this.counter == -2) {
+					document.getElementById('final-frame').classList.add('bss-show');
+				} else {
+					this.$items[this.counter].classList.add('bss-show');					
+				}
             },
+			injectFinalFrame: function (el) {
+				// Write the final frame of the show
+				var finalFrame = document.createElement("figure");
+
+				// Give it a class
+				finalFrame.setAttribute('id', 'final-frame');
+
+				// Give it some content
+				finalFrame.innerHTML = '<div><h3>Stakken er tom!</h3> \
+<p><a href="../../index.html">Hop tilbage til oversigten</a></p></div>';
+
+				// Append to frame and then DOM
+				el.appendChild(finalFrame);
+			},
             injectControls: function (el) {
-            // build and inject prev/next controls
+				// build and inject prev/next controls
                 // first create all the new elements
                 var spanPrev = document.createElement("span"),
                     spanNext = document.createElement("span"),
                     docFrag = document.createDocumentFragment();
-        
+				
                 // add classes
                 spanPrev.classList.add('bss-prev');
                 spanNext.classList.add('bss-next');
-        
+				
                 // add contents
                 spanPrev.innerHTML = '&laquo;';
                 spanNext.innerHTML = '&raquo;';
@@ -72,7 +107,7 @@ var makeBSS = function (el, options) {
                 el.querySelector('.bss-next').addEventListener('click', function () {
                     that.showCurrent(1); // increment & show
                 }, false);
-            
+				
                 el.querySelector('.bss-prev').addEventListener('click', function () {
                     that.showCurrent(-1); // decrement & show
                 }, false);
@@ -106,7 +141,7 @@ var makeBSS = function (el, options) {
             },
             addFullScreen: function(el){
                 var that = this,
-                fsControl = document.createElement("span");
+					fsControl = document.createElement("span");
                 
                 fsControl.classList.add('bss-fullscreen');
                 el.appendChild(fsControl);
@@ -125,34 +160,38 @@ var makeBSS = function (el, options) {
                 });
             },
             toggleFullScreen: function(el){
-                // https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode
-                if (!document.fullscreenElement &&    // alternative standard method
-                    !document.mozFullScreenElement && !document.webkitFullscreenElement &&   
+                // https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/-
+                // Using_full_screen_mode
+				
+				// alternative standard method
+                if (!document.fullscreenElement && 
+                    !document.mozFullScreenElement &&
+					!document.webkitFullscreenElement &&   
                     !document.msFullscreenElement ) {  // current working methods
-                    if (document.documentElement.requestFullscreen) {
-                      el.requestFullscreen();
-                    } else if (document.documentElement.msRequestFullscreen) {
-                      el.msRequestFullscreen();
-                    } else if (document.documentElement.mozRequestFullScreen) {
-                      el.mozRequestFullScreen();
-                    } else if (document.documentElement.webkitRequestFullscreen) {
-                      el.webkitRequestFullscreen(el.ALLOW_KEYBOARD_INPUT);
-                    }
+						if (document.documentElement.requestFullscreen) {
+							el.requestFullscreen();
+						} else if (document.documentElement.msRequestFullscreen) {
+							el.msRequestFullscreen();
+						} else if (document.documentElement.mozRequestFullScreen) {
+							el.mozRequestFullScreen();
+						} else if (document.documentElement.webkitRequestFullscreen) {
+							el.webkitRequestFullscreen(el.ALLOW_KEYBOARD_INPUT);
+						}
                 } else {
                     if (document.exitFullscreen) {
-                      document.exitFullscreen();
+						document.exitFullscreen();
                     } else if (document.msExitFullscreen) {
-                      document.msExitFullscreen();
+						document.msExitFullscreen();
                     } else if (document.mozCancelFullScreen) {
-                      document.mozCancelFullScreen();
+						document.mozCancelFullScreen();
                     } else if (document.webkitExitFullscreen) {
-                      document.webkitExitFullscreen();
+						document.webkitExitFullscreen();
                     }
                 }
             } // end toggleFullScreen
             
         }; // end Slideshow object .....
-        
+    
     // make instances of Slideshow as needed
     [].forEach.call($slideshows, function (el) {
         $slideshow = Object.create(Slideshow);
