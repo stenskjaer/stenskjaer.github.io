@@ -221,18 +221,24 @@ def csv_to_html_frames(filename):
 
 
     with open(filename) as f:
+        # Get the file length
+        length = sum(1 for row in f) + 1
+
+        f.seek(0)
         reader = csv.reader(f)
         frames = ""
-
+                
         # Get title from first row
         title = reader.next()[0]
         
         # Get the question-answer sets and return html
-        for row in reader:
+        for i, row in enumerate(reader):
             for cell in row:
                 unicode(cell, 'utf-8')
             question = row[0]
             answer = row[1]
+            location = str(i + 1) + ' / ' + str(length - 2)
+
 
             # Convert *content* to \textbf{content}
             question, answer, title = set_font_html(question, answer, title)
@@ -243,15 +249,17 @@ def csv_to_html_frames(filename):
             <h4>Spørgsmål</h4>
             <p>{0}</p>
             <span class="title">{1}</span>
+            <span class="location">{2}</span>
             </figure>
-            """.format(question, title))
+            """.format(question, title, location))
             frames += str("""
             <figure class="answer">\n
             <h4>Svar</h4>\n
             <p>{0}</p>\n
             <span class="title">{1}</span>
+            <span class="location">{2}</span>
             </figure>
-            """.format(answer, title))
+            """.format(answer, title, location))
 
     return frames
 
