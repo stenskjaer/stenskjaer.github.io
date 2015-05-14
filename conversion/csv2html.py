@@ -134,7 +134,7 @@ def set_font_html(*args):
     output = []
     for string in args:
         # Set boldface
-        # string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
+        string = re.sub(r'\*([^\*]+)\*', r'<strong>\1</strong>', string)
 
         # Set quotation marks
         string = re.sub(r'\'([^\']+)\'', r"&lsquo;\1&rsquo;", string)
