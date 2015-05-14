@@ -82,7 +82,7 @@ def create_main_tex_file(directory, output, compilation, title):
     shutil.rmtree(d)
 
 
-def create_main_html_file(directory, output, title):
+def create_main_html_file(directory, output):
     """Creates a main html file in directory with same name as var
     filename.
 
@@ -108,9 +108,7 @@ def create_main_html_file(directory, output, title):
         basename = os.path.basename(item[:-4])
         filename = os.path.join(d, basename + '.html')
 
-        if not title:
-            title = basename
-        frames = csv_to_html_frames(item, title)
+        frames = csv_to_html_frames(item)
 
         with open(filename, 'w') as f:
             html_pre = settings.html_pre
@@ -212,9 +210,8 @@ def csv_to_frames(filename):
 
     return frames
 
-def csv_to_html_frames(filename, title):
-    """
-    Put cells of csv in html frames.
+def csv_to_html_frames(filename):
+    """Put cells of csv in html frames and extract slide title from csv
 
     Return string: frames
 
@@ -226,6 +223,11 @@ def csv_to_html_frames(filename, title):
     with open(filename) as f:
         reader = csv.reader(f)
         frames = ""
+
+        # Get title from first row
+        title = reader.next()[0]
+        
+        # Get the question-answer sets and return html
         for row in reader:
             for cell in row:
                 unicode(cell, 'utf-8')
@@ -253,7 +255,6 @@ def csv_to_html_frames(filename, title):
 
     return frames
 
-
 def __main__():
     import argparse
 
@@ -269,10 +270,6 @@ def __main__():
                         'the directory where the pages will be '\
                         'collected. Default = ./output',
                         nargs='?')
-    parser.add_argument('--title', '-t',
-                       help='Specify a general title that will appear'
-                       'in all slides',
-                       nargs='?')
     args = parser.parse_args()
 
     # Input directory
@@ -290,7 +287,7 @@ def __main__():
         output = os.path.join(directory, 'output')
 
     # The csv to tex conversion.
-    create_main_html_file(directory, output, args.title)
+    create_main_html_file(directory, output)
 
 if __name__ == "__main__":
     __main__()
