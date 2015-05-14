@@ -126,26 +126,33 @@ def compile_latex(filename):
     subprocess.call(args, cwd=os.path.dirname(filename))
 
 
-def set_font_html(string):
-    """ Convert input to HTML compliant output:
-    *content* -> <span class="bold">content</span>;
-    'content' -> 'content';
-
-    Keyword Arguments:
-    string -- The input string.
+def set_font_html(*args):
+    """Convert input to HTML compliant output:
+    
+    Keyword Arguments: *args -- any amount of input strings returned
+    in list, reformated.
     """
 
-    # Set boldface
-    # string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
+    output = []
+    for string in args:
+        # Set boldface
+        # string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
 
-    # Set quotation marks
-    string = re.sub(r'\'([^\']+)\'', r"'\1'", string)
+        # Set quotation marks
+        string = re.sub(r'\'([^\']+)\'', r"&lsquo;\1&rsquo;", string)
 
-    # Set ldots
-    # string = re.sub(r'\.{3}', r'\ldots{}', string)
+        # Set en-hyphens
+        string = string.replace('--', '–')
+        
+        # Set ldots
+        string = string.replace('...', '&hellip;')
 
-    return(string)
+        # Set linebreaks
+        string = string.replace('\\\\', '<br />')
+        
+        output.append(string)
 
+    return(output)
 
 def set_font_commands(string):
     """ Convert input to LaTeX compliant output:
@@ -226,8 +233,7 @@ def csv_to_html_frames(filename, title):
             answer = row[1]
 
             # Convert *content* to \textbf{content}
-            question = set_font_commands(question)
-            answer = set_font_commands(answer)
+            question, answer, title = set_font_html(question, answer, title)
 
             # Create html
             frames += str("""
