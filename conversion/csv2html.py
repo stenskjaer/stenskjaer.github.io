@@ -250,14 +250,16 @@ def csv_to_html_frames(filename):
             <p>{0}</p>
             <span class="title">{1}</span>
             <span class="location">{2}</span>
+            <div class="close"><a href="../../index.html">&#10005;</a></div>
             </figure>
             """.format(question, title, location))
             frames += str("""
-            <figure class="answer">\n
-            <h4>Svar</h4>\n
-            <p>{0}</p>\n
+            <figure class="answer">
+            <h4>Svar</h4>
+            <p>{0}</p>
             <span class="title">{1}</span>
             <span class="location">{2}</span>
+            <div class="close"><a href="../../index.html">&#10005;</a></div>
             </figure>
             """.format(answer, title, location))
 

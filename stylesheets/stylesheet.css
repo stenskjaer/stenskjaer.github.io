@@ -410,6 +410,28 @@ Slides
 	overflow: scroll
 }
 
+.bss-slides .close {
+	position: absolute;
+	right: 7%;
+	top: 3%;
+	font-size: 22px;
+}
+
+.close a {
+	color: #373737;
+	opacity: .4;
+	text-decoration: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.close a:hover {
+	cursor: pointer;
+	opacity: 1;
+}
+
 .bss-slides:focus{
 	outline: 0;
 }
