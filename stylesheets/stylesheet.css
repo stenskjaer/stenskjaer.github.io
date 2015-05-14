@@ -510,6 +510,10 @@ Small Device Styles
 	  font-size: 26px;
   }
 
+  .bss-slides span {
+	  font-size: 18px;
+  }
+  
   #project_title {
   font-size: 32px;
   }
@@ -553,6 +557,9 @@ Small Device Styles
 	.bss-slides p {
 		font-size: 32px;
 	}
+	.bss-slides span {
+		font-size: 16px;
+	}	
 }
 
 @media screen and (min-width: 660px) {
@@ -561,6 +568,9 @@ Small Device Styles
 	}
 	.bss-slides p {
 		font-size: 42px;
+	}
+	.bss-slides span {
+		font-size: 20px;
 	}	
 }
 
@@ -568,6 +578,9 @@ Small Device Styles
 	.bss-slides p {
 		font-size: 50px;
 		padding-top: 5% 0;
+	}
+	.bss-slides span {
+		font-size: 22px;
 	}
 
 	.bss-slides h4 {
