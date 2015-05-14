@@ -406,6 +406,10 @@ Slides
 	display: block;
 }
 
+.bss-slides p {
+	overflow: scroll
+}
+
 .bss-slides:focus{
 	outline: 0;
 }
@@ -435,6 +439,12 @@ span.title {
 	position: absolute;
 	bottom: 0;
 	font-size: 2vw;
+}
+
+span.location {
+	position: absolute;
+	bottom: 0px;
+	right: 7%;
 }
 
 .bss-slides figcaption a{
@@ -505,7 +515,8 @@ Small Device Styles
 	  height: 300px;
   }
   .bss-slides p {
-	  font-size: 20px;
+	  font-size: 16px;
+	  max-height: 220px;
   }
 
   .bss-slides span {
@@ -553,7 +564,8 @@ Small Device Styles
 		height: 400px;
 	}
 	.bss-slides p {
-		font-size: 32px;
+		font-size: 24px;
+		max-height: 300px;
 	}
 	.bss-slides span {
 		font-size: 16px;
@@ -565,7 +577,8 @@ Small Device Styles
 		height: 500px;
 	}
 	.bss-slides p {
-		font-size: 38px;
+		max-height: 360px;
+		font-size: 32px;
 	}
 	.bss-slides span {
 		font-size: 18px;
@@ -573,9 +586,12 @@ Small Device Styles
 }
 
 @media screen and (min-width: 1000px) {
+	#slides {
+		height: 600px;
+	}
 	.bss-slides p {
-		font-size: 42px;
-		/* padding-top: 4% 0; */
+		font-size: 40px;
+		max-height: 400px;
 	}
 	.bss-slides span {
 		font-size: 22px;
@@ -587,3 +603,6 @@ Small Device Styles
 		padding: 3% 0;
 	}
 }
+
+
+
