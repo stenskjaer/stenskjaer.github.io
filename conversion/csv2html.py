@@ -4,19 +4,170 @@ import csv, re
 import settings
 import subprocess, os, shutil
 
-def list_csv_files(directory):
-    """
-    Keyword Arguments:
-    directory -- input directory to be traversed.
+class Conversion:
+    
+    def __init__(self, input_dir, output_type):
+        self.input_dir = input_dir
+        self.output_type = output_type
+        if self.output_type == "pdf":
+            self.pdf = True
+            self.tex = True
+        elif self.output_type == "tex":
+            self.tex = True
+        elif self.output_type == "html":
+            self.html = True
 
-    Adds all csv-files in given directory to list.
-    """
+    def create_output_slides(self):
+        """Main function for conversion.
+        
+        Keyword Arguments:
+        input_dir   -- 
+        output_type -- 
+        """
+        
+        content_list = [os.path.join(self.input_dir, f)
+                        for f in os.listdir(self.input_dir)
+                        if f.endswith('.csv')]
 
-    files_in_dir = []
-    for f in os.listdir(directory):
-        if f.endswith('.csv'):
-            files_in_dir.append(os.path.join(directory, f))
-    return files_in_dir
+        csv_list = self.prepare_CSVs(content_list)
+        print(self.csv_to_html(csv_list))
+
+    def prepare_CSVs(self, content_list):
+        """Prepare list of csv's for conversion: Find title and return list with
+        questions, answers and locations
+
+        Keyword Arguments:
+        self     -- 
+        filename --
+
+        """
+        # Init the return list
+        return_list = []
+
+        print(content_list)
+        for item in content_list:
+            with open(item) as f:
+                # Init the list of this csv
+                item_list = []
+                
+                # Get the file length
+                length = sum(1 for row in f) + 1
+
+                # reset counter and init csv.reader
+                f.seek(0)           
+                reader = csv.reader(f)
+
+                # Get title from first row and put in list
+                title = reader.next()[0]
+
+                # Get the question-answer sets and return html
+                for i, row in enumerate(reader):
+
+                    # First, set location
+                    location = str(i + 1) + ' / ' + str(length - 2)
+
+                    for cell in row:
+                        # unicode(cell, 'utf-8')
+                        question = row[0]
+                        answer = row[1]
+
+                    # Add items as nested list
+                    item_list.append([question, answer, location])
+
+                return_list.append(item_list)
+        
+        return(return_list)
+
+                
+    def csv_to_html(self, csv_list):
+        """Return a list of html-buffers from input csv-list
+        
+        Keyword Arguments: filename --
+
+        """
+
+        decks = []
+        for deck in csv_list:
+            
+            frames = ""
+            for card in deck:
+                question, answer, title = self.fontify_html(question, answer, title)
+
+                # Create html
+                frames += str("""
+                <figure class="question">
+                <h4>Spørgsmål</h4>
+                <p>{0}</p>
+                <span class="title">{1}</span>
+                <span class="location">{2}</span>
+                <div class="close"><a href="../../index.html">&#10005;</a></div>
+                </figure>
+                """.format(question, title, location))
+                frames += str("""
+                <figure class="answer">
+                <h4>Svar</h4>
+                <p>{0}</p>
+                <span class="title">{1}</span>
+                <span class="location">{2}</span>
+                <div class="close"><a href="../../index.html">&#10005;</a></div>
+                </figure>
+                """.format(answer, title, location))
+
+            decks.append(frames)
+
+        return(decks)
+            
+    def fontify_html(*args):
+        """Convert input to HTML compliant output:
+
+        Keyword Arguments: *args -- any amount of input strings returned
+        in list, reformated.
+        """
+
+        output = []
+        for string in args:
+            # Set boldface
+            string = re.sub(r'\*([^\*]+)\*', r'<strong>\1</strong>', string)
+
+            # Set quotation marks
+            string = re.sub(r'\'([^\']+)\'', r"&lsquo;\1&rsquo;", string)
+
+            # Set en-hyphens
+            string = string.replace('--', '–')
+
+            # Set ldots
+            string = string.replace('...', '&hellip;')
+
+            # Set linebreaks
+            string = string.replace('\\\\', '<br />')
+
+            output.append(string)
+
+        return(output)
+
+    def fontify_tex(string):
+        """ Convert input to LaTeX compliant output:
+        *content* -> \textbf{content};
+        'content' -> `content';
+        ... -> \ldots
+
+        Keyword Arguments:
+        string -- The input string.
+        """
+
+        # Set boldface
+        string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
+
+        # Set quotation marks
+        string = re.sub(r'\'([^\']+)\'', r"`\1'", string)
+
+        # Set ldots
+        string = re.sub(r'\.{3}', r'\ldots{}', string)
+
+        return(string)
+
+
+                               
 
 def create_main_tex_file(directory, output, compilation, title):
     """Creates a main tex file in directory with same name as var
@@ -152,7 +303,7 @@ def set_font_html(*args):
 
     return(output)
 
-def set_font_commands(string):
+def fontify_tex(string):
     """ Convert input to LaTeX compliant output:
     *content* -> \textbf{content};
     'content' -> `content';
@@ -199,8 +350,8 @@ def csv_to_frames(filename):
             answer = re.sub('~', r"\\textasciitilde{}", answer)
 
             # Convert *content* to \textbf{content}
-            question = set_font_commands(question)
-            answer = set_font_commands(answer)
+            question = fontify_tex(question)
+            answer = fontify_tex(answer)
 
             # Create latex page.
             frames += str("\\begin{frame}\\Large\n")
@@ -297,7 +448,11 @@ def __main__():
         output = os.path.join(directory, 'output')
 
     # The csv to tex conversion.
-    create_main_html_file(directory, output)
+    # create_main_html_file(directory, output)
+
+    conversion_object = Conversion(directory, "pdf")
+    conversion_object.create_output_slides()
+    
 
 if __name__ == "__main__":
     __main__()
