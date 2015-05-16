@@ -44,7 +44,6 @@ class Conversion:
         # Init the return list
         return_list = []
 
-        print(content_list)
         for item in content_list:
             with open(item) as f:
                 # Init the list of this csv
@@ -72,7 +71,7 @@ class Conversion:
                         answer = row[1]
 
                     # Add items as nested list
-                    item_list.append([question, answer, location])
+                    item_list.append([question, answer, location, title])
 
                 return_list.append(item_list)
         
@@ -80,21 +79,31 @@ class Conversion:
 
                 
     def csv_to_html(self, csv_list):
-        """Return a list of html-buffers from input csv-list
+        """Return a nested list of html-buffers from input csv-list
         
         Keyword Arguments: filename --
 
         """
 
-        decks = []
+        decks = []        
         for deck in csv_list:
             
-            frames = ""
+            # Add the prefatory HTML to the list
+            frames = []
+            frames.append(settings.html_pre)
+            
             for card in deck:
-                question, answer, title = self.fontify_html(question, answer, title)
+                # Put all the question-answer sets in a list called frames
+                
+                question_answer = ""
+                
+                # Fontify the strings
+                question, answer, location, title = card
+                question, answer, location, title = self.fontify_html(
+                    question, answer, location, title)
 
                 # Create html
-                frames += str("""
+                question_answer += str("""
                 <figure class="question">
                 <h4>Spørgsmål</h4>
                 <p>{0}</p>
@@ -103,7 +112,7 @@ class Conversion:
                 <div class="close"><a href="../../index.html">&#10005;</a></div>
                 </figure>
                 """.format(question, title, location))
-                frames += str("""
+                question_answer += str("""
                 <figure class="answer">
                 <h4>Svar</h4>
                 <p>{0}</p>
@@ -113,11 +122,19 @@ class Conversion:
                 </figure>
                 """.format(answer, title, location))
 
-            decks.append(frames)
+                # Collect all the frames in one list (one deck)
+                frames.append(question_answer)
 
+            # Add the remaining HTML to the list
+            frames.append(settings.html_post)
+                        
+            # Collect the complete html-buffer to the list of decs
+            decks.append(frames)
+                                
         return(decks)
-            
-    def fontify_html(*args):
+        
+        
+    def fontify_html(self, *args):
         """Convert input to HTML compliant output:
 
         Keyword Arguments: *args -- any amount of input strings returned
@@ -450,7 +467,7 @@ def __main__():
     # The csv to tex conversion.
     # create_main_html_file(directory, output)
 
-    conversion_object = Conversion(directory, "pdf")
+    conversion_object = Conversion(directory, "html")
     conversion_object.create_output_slides()
     
 
