@@ -14,6 +14,10 @@ class Conversion:
     def __init__(self, input_dir, output_type):
         self.input_dir = input_dir
         self.output_type = output_type
+        self.pdf = False
+        self.tex = False
+        self.html = False
+        
         if self.output_type == "pdf":
             self.pdf = True
             self.tex = True
@@ -38,6 +42,8 @@ class Conversion:
         
         if self.html:
             return(self.csv_to_html(csv_list), file_list)
+        elif self.tex:
+            return(self.csv_to_tex(csv_list), file_list)
             
                           
     def prepare_CSVs(self, content_list):
@@ -145,7 +151,50 @@ class Conversion:
                                 
         return(decks)
         
+    def csv_to_tex(self, csv_list):
+        """Return a nested list of tex-buffers from input csv-list
         
+        Keyword Arguments: filename --
+
+        """
+        
+        decks = []
+        for deck in csv_list:
+
+            frames = []
+            
+            # Add preamble
+            frames.append(settings.preamble)
+
+            for card in deck:
+            # Put all the question-answer sets in a list called frames
+
+                question_answer = ""
+
+                # Fontify the strings
+                question, answer, location, title = card
+                question, answer, location, title = self.fontify_tex(
+                    question, answer, location, title)
+
+                question_answer = r"""
+                \begin{frame}\Large
+                \only<1>{0}
+                \only<2>{1}
+                \end{frame}
+                """
+
+                # Collect the frames in one deck
+                frames.append(question_answer)
+
+            # Close the document
+            frames.append("\\end{document}")
+
+            # Collect decks in list of decks
+            decks.append(frames)
+
+        return(decks)
+
+    
     def fontify_html(self, *args):
         """Convert input to HTML compliant output:
 
@@ -174,7 +223,8 @@ class Conversion:
 
         return(output)
 
-    def fontify_tex(string):
+
+    def fontify_tex(self, *args):
         """ Convert input to LaTeX compliant output:
         *content* -> \textbf{content};
         'content' -> `content';
@@ -184,16 +234,21 @@ class Conversion:
         string -- The input string.
         """
 
-        # Set boldface
-        string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
+        output = []
+        for string in args:
 
-        # Set quotation marks
-        string = re.sub(r'\'([^\']+)\'', r"`\1'", string)
+            # Set boldface
+            string = re.sub(r'\*([^\*]+)\*', r'\\textbf{\1}', string)
 
-        # Set ldots
-        string = re.sub(r'\.{3}', r'\ldots{}', string)
+            # Set quotation marks
+            string = re.sub(r'\'([^\']+)\'', r"`\1'", string)
 
-        return(string)
+            # Set ldots
+            string = re.sub(r'\.{3}', r'\ldots{}', string)
+
+            output.append(string)
+        
+        return(output)
 
 
 class CreateFiles:
@@ -305,43 +360,6 @@ def compile_latex(filename):
     subprocess.call(args, cwd=os.path.dirname(filename))
 
     
-def csv_to_frames(filename):
-    """
-    Put cells of csv in beamer frames.
-
-    Return string: frames
-
-    Keyword Arguments:
-    filename -- input file
-    """
-
-
-    with open(filename) as f:
-        reader = csv.reader(f)
-        frames = ""
-        for row in reader:
-            for cell in row:
-                unicode(cell, 'utf-8')
-            question = row[0]
-            answer = row[1]
-
-            # Regex convert ~ to \textasciitilde{}
-            question = re.sub('~', r"\\textasciitilde{}", question)
-            answer = re.sub('~', r"\\textasciitilde{}", answer)
-
-            # Convert *content* to \textbf{content}
-            question = fontify_tex(question)
-            answer = fontify_tex(answer)
-
-            # Create latex page.
-            frames += str("\\begin{frame}\\Large\n")
-            frames += str("\\only<1>{%s}\n" % question)
-            frames += str("\\only<2>{%s}\n" % answer)
-            frames += str("\\end{frame}\n")
-
-    return frames
-
-
 def __main__():
     import argparse
 
