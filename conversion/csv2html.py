@@ -5,7 +5,12 @@ import settings
 import subprocess, os, shutil
 
 class Conversion:
+    """Handles conversion of the input csv-files to html or tex-format
     
+    Returns:
+    -- List of formatted content. One list item for each csv-file
+    -- List of filenames in the same order as the formatted content.
+    """
     def __init__(self, input_dir, output_type):
         self.input_dir = input_dir
         self.output_type = output_type
@@ -18,7 +23,7 @@ class Conversion:
             self.html = True
 
     def create_output_slides(self):
-        """Main function for conversion.
+        """Main function for conversion. 
         
         Keyword Arguments:
         input_dir   -- 
@@ -29,9 +34,12 @@ class Conversion:
                         for f in os.listdir(self.input_dir)
                         if f.endswith('.csv')]
 
-        csv_list = self.prepare_CSVs(content_list)
-        print(self.csv_to_html(csv_list))
-
+        csv_list, file_list = self.prepare_CSVs(content_list)
+        
+        if self.html:
+            return(self.csv_to_html(csv_list), file_list)
+            
+                          
     def prepare_CSVs(self, content_list):
         """Prepare list of csv's for conversion: Find title and return list with
         questions, answers and locations
@@ -43,9 +51,12 @@ class Conversion:
         """
         # Init the return list
         return_list = []
+        file_list = []
 
         for item in content_list:
             with open(item) as f:
+                filename = os.path.basename(f.name)
+                
                 # Init the list of this csv
                 item_list = []
                 
@@ -74,8 +85,9 @@ class Conversion:
                     item_list.append([question, answer, location, title])
 
                 return_list.append(item_list)
+                file_list.append(filename)
         
-        return(return_list)
+        return(return_list, file_list)
 
                 
     def csv_to_html(self, csv_list):
