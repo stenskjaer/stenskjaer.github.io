@@ -196,26 +196,45 @@ class Conversion:
         return(string)
 
 
-                               
 class CreateFiles:
     
-    def __init__(self, content, output_dir, output_type):
+    def __init__(self, content, output_dir, output_type, filenames):
         self.output_dir = output_dir
         self.output_type = output_type
         self.content = content
-        if self.output_type == "pdf":
-            self.pdf = True
-        elif self.output_type == "tex":
-            self.tex = True
-        elif self.output_type == "html":
-            self.html = True
+        self.filenames = filenames
+        self.output_type = output_type
     
-        # Create output dir
-        d = self.output_dir
-        if not os.path.exists(d):
-            os.mkdir(d)
+        # Create output dir if necessary
+        if not os.path.exists(self.output_dir):
+            os.mkdir(self.output_dir)
+
+        self.file_content_list = zip(self.filenames, self.content)
     
-    
+    def create_files(self):
+        """Creates the output in specified directory
+        
+        Keyword Arguments:
+        content_list -- 
+        """
+        
+        for item in self.file_content_list:
+
+            filename = item[0]
+            content = ' '.join(item[1])
+
+            # Create file 
+            basename = os.path.basename(item[0][:-4])
+            if self.output_type == "html":
+                file_ending = '.html'
+            elif self.output_type == "tex":
+                file_ending = '.tex'
+                
+            new_filename = os.path.join(self.output_dir, basename + file_ending)
+
+            with open(new_filename, 'w') as f:
+                f.write(content)
+
 
 def create_main_tex_file(directory, output, compilation, title):
     """Creates a main tex file in directory with same name as var
@@ -495,11 +514,12 @@ def __main__():
     else:
         output = os.path.join(directory, 'output')
 
-    conversion_object = Conversion(directory, "html")
-    conversion_object.create_output_slides()
-    content = conversion_object.create_output_slides()
+    output_type = "html"
+    conversion_object = Conversion(directory, output_type)
+    content, filenames = conversion_object.create_output_slides()
     
-    output_object = CreateFiles(content, output, "html")
+    output_object = CreateFiles(content, output, output_type, filenames)
+    output_object.create_files()
 
 if __name__ == "__main__":
     __main__()
