@@ -14,17 +14,6 @@ class Conversion:
     def __init__(self, input_dir, output_type):
         self.input_dir = input_dir
         self.output_type = output_type
-        self.pdf = False
-        self.tex = False
-        self.html = False
-        
-        if self.output_type == "pdf":
-            self.pdf = True
-            self.tex = True
-        elif self.output_type == "tex":
-            self.tex = True
-        elif self.output_type == "html":
-            self.html = True
 
     def create_output_slides(self):
         """Main function for conversion. 
@@ -40,9 +29,9 @@ class Conversion:
 
         csv_list, file_list = self.prepare_CSVs(content_list)
         
-        if self.html:
+        if self.output_type == "html":
             return(self.csv_to_html(csv_list), file_list)
-        elif self.tex:
+        elif self.output_type == "tex" or self.output_type == "pdf":
             return(self.csv_to_tex(csv_list), file_list)
             
                           
@@ -255,7 +244,6 @@ class CreateFiles:
     
     def __init__(self, content, output_dir, output_type, filenames):
         self.output_dir = output_dir
-        self.output_type = output_type
         self.content = content
         self.filenames = filenames
         self.output_type = output_type
@@ -282,7 +270,7 @@ class CreateFiles:
             basename = os.path.basename(item[0][:-4])
             if self.output_type == "html":
                 file_ending = '.html'
-            elif self.output_type == "tex":
+            elif self.output_type == "tex" or self.output_type == "pdf":
                 file_ending = '.tex'
                 
             new_filename = os.path.join(self.output_dir, basename + file_ending)
