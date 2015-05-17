@@ -197,6 +197,25 @@ class Conversion:
 
 
                                
+class CreateFiles:
+    
+    def __init__(self, content, output_dir, output_type):
+        self.output_dir = output_dir
+        self.output_type = output_type
+        self.content = content
+        if self.output_type == "pdf":
+            self.pdf = True
+        elif self.output_type == "tex":
+            self.tex = True
+        elif self.output_type == "html":
+            self.html = True
+    
+        # Create output dir
+        d = self.output_dir
+        if not os.path.exists(d):
+            os.mkdir(d)
+    
+    
 
 def create_main_tex_file(directory, output, compilation, title):
     """Creates a main tex file in directory with same name as var
@@ -476,12 +495,11 @@ def __main__():
     else:
         output = os.path.join(directory, 'output')
 
-    # The csv to tex conversion.
-    # create_main_html_file(directory, output)
-
     conversion_object = Conversion(directory, "html")
     conversion_object.create_output_slides()
+    content = conversion_object.create_output_slides()
     
+    output_object = CreateFiles(content, output, "html")
 
 if __name__ == "__main__":
     __main__()
