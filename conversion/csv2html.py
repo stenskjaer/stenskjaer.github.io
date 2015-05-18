@@ -263,7 +263,6 @@ class CreateFiles:
         
         for item in self.file_content_list:
 
-            filename = item[0]
             content = ' '.join(item[1])
 
             # Create file 
