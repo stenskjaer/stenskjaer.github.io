@@ -155,6 +155,13 @@ class Conversion:
             # Add preamble
             frames.append(settings.preamble)
 
+            # Get title from first list item
+            title = deck[0][3]
+
+            # Put the title (for the bottom) and start document
+            frames.append(r"\title{%s}" % title)
+            frames.append(r"\begin{document}")
+            
             for card in deck:
             # Put all the question-answer sets in a list called frames
 
@@ -167,10 +174,10 @@ class Conversion:
 
                 question_answer = r"""
                 \begin{frame}\Large
-                \only<1>{0}
-                \only<2>{1}
+                \only<1>{%s}
+                \only<2>{%s}
                 \end{frame}
-                """
+                """ % (question, answer)
 
                 # Collect the frames in one deck
                 frames.append(question_answer)
