@@ -278,6 +278,47 @@ class CreateFiles:
                 f.write(content)
 
 
+    def compile_tex(self):
+        """Compile the tex files and put pdf's in $output_dir/pdf
+
+        """
+
+        # Create temp and pdf directory in output-dir
+        temp = os.path.join(self.output_dir, 'temp')
+        if not os.path.exists(temp):
+            os.mkdir(temp)
+
+        pdf_dir = os.path.join(self.output_dir, 'pdf')
+        if not os.path.exists(pdf_dir):
+            os.mkdir(pdf_dir)
+
+        # Create list of tex-files to be compiled
+        orig_filelist = [os.path.join(self.output_dir, f)
+                    for f in os.listdir(self.output_dir)
+                    if f.endswith('.tex')]
+
+        # Create copy in temp-dir of tex-files
+        for file in orig_filelist: shutil.copy(file, temp)
+
+        temp_filelist = [os.path.join(temp, f) for f in os.listdir(temp)
+                         if f.endswith('.tex')]
+        
+        for file in temp_filelist:
+            args = ['latexmk', '-pdf', '-xelatex', file]
+            print file
+            subprocess.call(args, cwd=temp)
+            
+            # Move pdf to output dir
+            current_pdf = file[:-4] + '.pdf'
+            new_pdf = os.path.join(pdf_dir,
+                                   os.path.basename(current_pdf))
+            os.rename(current_pdf, new_pdf)
+
+
+        # After last tex-file, remove temp-dir
+        shutil.rmtree(temp)
+                
+
 def create_main_tex_file(directory, output, compilation, title):
     """Creates a main tex file in directory with same name as var
     filename.
@@ -340,11 +381,6 @@ def create_main_tex_file(directory, output, compilation, title):
 
     # After last csv, clean up temp directory
     shutil.rmtree(d)
-
-
-def compile_latex(filename):
-    args = ['latexmk', '-pdf', filename]
-    subprocess.call(args, cwd=os.path.dirname(filename))
 
     
 def __main__():
