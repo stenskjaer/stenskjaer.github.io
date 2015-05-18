@@ -407,7 +407,7 @@ def __main__():
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        description='Convert one or more csv-files to html-slides ')
+        description='Convert one or more csv-files to HTML, TeX or PDFs.')
     parser.add_argument('directory', nargs='?',
                         help='The root directory to be scanned for '\
                         'csv-files. Default = current working '\
