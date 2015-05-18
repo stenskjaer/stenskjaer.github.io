@@ -261,7 +261,19 @@ class CreateFiles:
 
         self.file_content_list = zip(self.filenames, self.content)
     
-    def create_files(self):
+    def collect_output(self):
+        """Directs the output based on the user args.
+        
+        Keyword Arguments:
+        self -- 
+        """
+
+        self.write_files()
+
+        if self.output_type == 'pdf':
+            self.compile_tex()
+    
+    def write_files(self):
         """Creates the output in specified directory
         
         Keyword Arguments:
