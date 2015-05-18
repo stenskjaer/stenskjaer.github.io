@@ -417,6 +417,11 @@ def __main__():
                         'the directory where the pages will be '\
                         'collected. Default = ./output',
                         nargs='?')
+    parser.add_argument('--type',
+                        choices=['html', 'tex', 'pdf'],
+                        help='Do you wish the output to be in HTML, TeX or \
+                        PDF-files? Default = HTML',
+                        default='html')
     args = parser.parse_args()
 
     # Input directory
@@ -433,12 +438,17 @@ def __main__():
     else:
         output = os.path.join(directory, 'output')
 
-    output_type = "html"
+    if args.type:
+        output_type = args.type
+    else:
+        output_type = 'html'
+    
     conversion_object = Conversion(directory, output_type)
     content, filenames = conversion_object.create_output_slides()
     
     output_object = CreateFiles(content, output, output_type, filenames)
-    output_object.create_files()
+
+    output_object.collect_output()
 
 if __name__ == "__main__":
     __main__()
