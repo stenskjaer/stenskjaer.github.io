@@ -6,7 +6,7 @@ import subprocess, os, shutil
 
 class Conversion:
     """Handles conversion of the input csv-files to html or tex-format
-    
+
     Returns:
     -- List of formatted content. One list item for each csv-file
     -- List of filenames in the same order as the formatted content.
